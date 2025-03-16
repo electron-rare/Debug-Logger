@@ -22,6 +22,7 @@
 
 #include <Arduino.h>
 #include <map> // map est utilisé pour les niveaux de débogage personnalisés
+#include <vector> // Ajouté pour utiliser std::vector
 
 /**
  * @class DebugLogger
@@ -74,15 +75,6 @@ public:
    * @param numLevels Nombre de niveaux de débogage.
    */
   static void begin(HardwareSerial* serialPort, unsigned long baudrate, const bool* levels, size_t numLevels);
-
-  /**
-   * @brief Initialise le DebugLogger avec le port série, le baudrate et les niveaux de débogage spécifiés.
-   * @param serialPort Port série utilisé pour le débogage.
-   * @param baudrate Baudrate utilisé pour le port série.
-   * @param levels Tableau de niveaux de débogage représentant les niveaux de débogage activés.
-   * @param numLevels Nombre de niveaux de débogage.
-   */
-  static void begin(HardwareSerial* serialPort, unsigned long baudrate, const DebugLevel levels[] = nullptr, size_t numLevels = 0);
 
   /**
    * @brief Définit les niveaux de débogage.
