@@ -81,13 +81,28 @@ void setup() {
 }
 ```
 
+Pour initialiser le `DebugLogger` avec les niveaux de débogage par défaut et le port série standard à 115200 baud :
+
+```cpp
+#include <DebugLogger.h>
+
+DebugLogger logger;
+
+void setup() {
+  logger.begin(nullptr, 0); // Utilise le port série standard et un baudrate de 115200
+  logger.setDefaultDebugLevels();
+}
+```
+
 ### Méthodes
 
 - `print(const String &message)`: Affiche un message sans saut de ligne.
 - `println(const String &message)`: Affiche un message avec un saut de ligne.
-- `printDebug(DebugLevel level, const String &message)`: Affiche un message de débogage avec un préfixe correspondant au niveau.
-- `printlnDebug(DebugLevel level, const String &message)`: Affiche un message de débogage avec un préfixe et un saut de ligne.
-- `setDebugLevel(DebugLevel level, bool enabled)`: Active ou désactive un niveau de débogage spécifique.
+- `print(DebugLevel level, const String &message)`: Affiche un message de débogage avec un préfixe correspondant au niveau.
+- `println(DebugLevel level, const String &message)`: Affiche un message de débogage avec un préfixe et un saut de ligne.
+- `enableCategory(DebugLevel level)`: Active une catégorie de débogage spécifique.
+- `disableCategory(DebugLevel level)`: Désactive une catégorie de débogage spécifique.
+- `isCategoryEnabled(DebugLevel level)`: Vérifie si une catégorie de débogage est activée.
 - `setDebugLevelName(DebugLevel level, const char* name)`: Définit le nom d'un niveau de débogage.
 - `setDefaultDebugLevels()`: Définit les niveaux de débogage par défaut.
 
@@ -109,8 +124,8 @@ void setup() {
   logger.setDebugLevelName(DebugLogger::INFO, "INFORMATION");
 
   logger.println("Ceci est un message de log.");
-  logger.printlnDebug(DebugLogger::INFO, "Ceci est un message d'information.");
-  logger.printlnDebug(DebugLogger::ERROR, "Ceci est un message d'erreur.");
+  logger.println(DebugLogger::INFO, "Ceci est un message d'information.");
+  logger.println(DebugLogger::ERROR, "Ceci est un message d'erreur.");
 }
 
 void loop() {
@@ -128,15 +143,16 @@ DebugLogger logger;
 void setup() {
   Serial.begin(9600); // Définir le baudrate
   logger.begin(&Serial); // Définir le port série
-  DebugLogger::DebugLevel levels[NUM_LEVELS] = {DebugLogger::NONE, DebugLogger::ERROR, DebugLogger::WARNING, DebugLogger::NONE, DebugLogger::DEBUG};
-  logger.begin(levels);
+  logger.enableCategory(DebugLogger::ERROR);
+  logger.enableCategory(DebugLogger::WARNING);
+  logger.enableCategory(DebugLogger::DEBUG);
 
   bool isEnabled = logger.isCategoryEnabled(DebugLogger::DEBUG);
   Serial.print("DEBUG level is ");
   Serial.println(isEnabled ? "enabled" : "disabled");
 
-  logger.printDebug(DebugLogger::DEBUG, "Ceci est un message de débogage.");
-  logger.printlnDebug(DebugLogger::DEBUG, "Ceci est un message de débogage avec saut de ligne.");
+  logger.print(DebugLogger::DEBUG, "Ceci est un message de débogage.");
+  logger.println(DebugLogger::DEBUG, "Ceci est un message de débogage avec saut de ligne.");
 }
 
 void loop() {
@@ -156,8 +172,8 @@ void setup() {
   logger.begin(&Serial); // Définir le port série
   logger.setDefaultDebugLevels();
 
-  logger.printWithPrefix(DebugLogger::INFO, "INFO: ", "Ceci est un message d'information.");
-  logger.printlnWithPrefix(DebugLogger::INFO, "INFO: ", "Ceci est un message d'information avec saut de ligne.");
+  logger.print(DebugLogger::INFO, "INFO: Ceci est un message d'information.");
+  logger.println(DebugLogger::INFO, "INFO: Ceci est un message d'information avec saut de ligne.");
 }
 
 void loop() {

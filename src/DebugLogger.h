@@ -133,14 +133,26 @@ public:
    * @param level Niveau de débogage.
    * @param message Message à afficher.
    */
-  static void printDebug(DebugLevel level, const String &message);
+  static void print(DebugLevel level, const String &message);
 
   /**
    * @brief Affiche un message de débogage avec un préfixe et un saut de ligne.
    * @param level Niveau de débogage.
    * @param message Message à afficher.
    */
-  static void printlnDebug(DebugLevel level, const String &message);
+  static void println(DebugLevel level, const String &message);
+
+  /**
+   * @brief Active une catégorie de débogage spécifique.
+   * @param level Niveau de débogage.
+   */
+  static void enableCategory(DebugLevel level);
+
+  /**
+   * @brief Désactive une catégorie de débogage spécifique.
+   * @param level Niveau de débogage.
+   */
+  static void disableCategory(DebugLevel level);
 
   /**
    * @brief Active ou désactive un niveau de débogage spécifique.

@@ -59,6 +59,16 @@ void DebugLogger::begin(HardwareSerial* serialPort, unsigned long baudrate, cons
 }
 
 /**
+ * @brief Initialise le DebugLogger avec le port série standard et un baudrate de 115200.
+ * 
+ * @param levels Tableau de booléens représentant les niveaux de débogage activés.
+ * @param numLevels Nombre de niveaux de débogage.
+ */
+void DebugLogger::begin(const DebugLevel levels[], size_t numLevels) {
+  begin(&Serial, 115200, levels, numLevels);
+}
+
+/**
  * @brief Définit les niveaux de débogage.
  * 
  * @param levels Tableau de booléens représentant les niveaux de débogage activés.
@@ -178,8 +188,10 @@ void DebugLogger::printlnWithPrefix(DebugLevel level, const String &prefix, cons
  * @param level Niveau de débogage.
  * @param message Message à afficher.
  */
-void DebugLogger::printDebug(DebugLevel level, const String &message) {
-  printWithPrefix(level, String(debugLevelNames[level]) + " : ", message);
+void DebugLogger::print(DebugLevel level, const String &message) {
+  if (isCategoryEnabled(level)) {
+    serialPort->print(String(debugLevelNames[level]) + " : " + message);
+  }
 }
 
 /**
@@ -188,8 +200,10 @@ void DebugLogger::printDebug(DebugLevel level, const String &message) {
  * @param level Niveau de débogage.
  * @param message Message à afficher.
  */
-void DebugLogger::printlnDebug(DebugLevel level, const String &message) {
-  printlnWithPrefix(level, String(debugLevelNames[level]) + " : ", message);
+void DebugLogger::println(DebugLevel level, const String &message) {
+  if (isCategoryEnabled(level)) {
+    serialPort->println(String(debugLevelNames[level]) + " : " + message);
+  }
 }
 
 /**
@@ -198,4 +212,22 @@ void DebugLogger::printlnDebug(DebugLevel level, const String &message) {
 void DebugLogger::setDefaultDebugLevels() {
   bool defaultLevels[] = {false, true, true, true, false};
   setDebugLevel(defaultLevels, 5);
+}
+
+/**
+ * @brief Active une catégorie de débogage spécifique.
+ * 
+ * @param level Niveau de débogage.
+ */
+void DebugLogger::enableCategory(DebugLevel level) {
+  debugLevels[level] = true;
+}
+
+/**
+ * @brief Désactive une catégorie de débogage spécifique.
+ * 
+ * @param level Niveau de débogage.
+ */
+void DebugLogger::disableCategory(DebugLevel level) {
+  debugLevels[level] = false;
 }
