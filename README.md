@@ -1,186 +1,161 @@
-# DebugLogger
-
-`DebugLogger` est une classe pour gérer les messages de débogage sur une carte Arduino. Utilisez cette bibliothèque pour faciliter le débogage de vos projets Arduino.
+# 🔍 DebugLogger
 
 ![License](https://img.shields.io/badge/license-GPLv3-blue.svg)
 ![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)
+![Platform](https://img.shields.io/badge/platform-Arduino-orange.svg)
+![Status](https://img.shields.io/badge/status-stable-green.svg)
 
-## Utilité et Avantages
+> Une bibliothèque Arduino légère et flexible pour gérer les messages de débogage avec différents niveaux de sévérité.
 
-La librairie `DebugLogger` offre plusieurs avantages pour le développement de projets Arduino :
+<div align="center">
+  <img src="https://raw.githubusercontent.com/username/DebugLogger/main/docs/images/debug_console.png" alt="Capture d'écran de console de débogage" width="600"/>
+</div>
 
-- **Facilité de Débogage** : Simplifie l'affichage des messages de débogage, ce qui permet de suivre facilement le flux d'exécution et d'identifier les problèmes.
-- **Niveaux de Débogage** : Permet de définir différents niveaux de débogage (INFO, DEBUG, ERROR, etc.) pour filtrer les messages en fonction de leur importance.
-- **Personnalisation** : Les utilisateurs peuvent définir des noms personnalisés pour les niveaux de débogage et configurer les niveaux activés ou désactivés.
-- **Affichage Structuré** : Les méthodes avec préfixe permettent d'afficher des messages de manière structurée, facilitant ainsi la lecture des logs.
-- **Flexibilité** : Compatible avec différentes configurations de projets Arduino et peut être facilement intégré dans des projets existants.
+## ✨ Fonctionnalités
 
-### Utilité des Niveaux de Débogage
+- 🚦 **Niveaux de débogage personnalisables** : ERROR, WARNING, INFO, DEBUG et catégories spécifiques (BATTERY, I2C, etc.)
+- 🎯 **Filtrage précis** : Affichez uniquement les messages des catégories qui vous intéressent
+- 🔄 **Activation/désactivation dynamique** : Modifiez les niveaux de débogage pendant l'exécution
+- 🔌 **Compatibilité étendue** : Fonctionne avec n'importe quel port série (Serial, Serial1, etc.)
+- 🚀 **Facile à utiliser** : API simple et intuitive
 
-Définir des niveaux de débogage est essentiel pour plusieurs raisons :
+## 📋 Table des matières
 
-- **Filtrage des Messages** : Permet de contrôler la quantité d'informations affichées en fonction de l'importance des messages. Par exemple, en mode production, vous pouvez choisir de n'afficher que les erreurs critiques.
-- **Organisation** : Aide à organiser les messages de débogage en catégories, ce qui facilite la recherche et l'analyse des logs.
-- **Performance** : Réduit la surcharge en évitant l'affichage de messages de débogage non essentiels, améliorant ainsi les performances du système.
-- **Clarté** : Améliore la lisibilité des logs en séparant les messages d'information, de débogage et d'erreur.
+- [Installation](#-installation)
+- [Utilisation rapide](#-utilisation-rapide)
+- [Documentation](#-documentation)
+- [Exemples](#-exemples)
+- [Contribution](#-contribution)
+- [Licence](#-licence)
 
-### Définir le Baudrate et le Port Série
+## 📥 Installation
 
-Pour plus de compatibilité, vous pouvez définir le baudrate et le port série utilisés par `DebugLogger`. Voici comment procéder :
+### Via le Gestionnaire de bibliothèques Arduino
+
+1. Ouvrez l'IDE Arduino
+2. Allez dans "Outils" > "Gérer les bibliothèques..."
+3. Recherchez "DebugLogger"
+4. Cliquez sur "Installer"
+
+### Installation manuelle
+
+```bash
+# Clonez ce dépôt dans votre dossier de bibliothèques Arduino
+git clone https://github.com/username/DebugLogger.git ~/Arduino/libraries/DebugLogger
+```
+
+## 🚀 Utilisation rapide
 
 ```cpp
 #include <DebugLogger.h>
 
-DebugLogger logger;
-
 void setup() {
-  Serial.begin(9600); // Définir le baudrate
-  logger.begin(&Serial); // Définir le port série
-  logger.setDefaultDebugLevels();
-}
-```
-
-Vous pouvez remplacer `9600` par le baudrate de votre choix et `&Serial` par le port série que vous utilisez (par exemple, `&Serial1`).
-
-## Licence
-
-```plaintext
-This file is part of DebugLogger.
-
-DebugLogger is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-DebugLogger is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with DebugLogger. If not, see <http://www.gnu.org/licenses/>.
-
-Created by Clément Saillant, 2025.
-```
-
-## Utilisation
-
-### Initialisation
-
-Pour initialiser le `DebugLogger` avec les niveaux de débogage par défaut :
-
-```cpp
-#include <DebugLogger.h>
-
-DebugLogger logger;
-
-void setup() {
-  Serial.begin(9600); // Définir le baudrate
-  logger.begin(&Serial); // Définir le port série
-  logger.setDefaultDebugLevels();
-}
-```
-
-Pour initialiser le `DebugLogger` avec les niveaux de débogage par défaut et le port série standard à 115200 baud :
-
-```cpp
-#include <DebugLogger.h>
-
-DebugLogger logger;
-
-void setup() {
-  logger.begin(nullptr, 0); // Utilise le port série standard et un baudrate de 115200
-  logger.setDefaultDebugLevels();
-}
-```
-
-### Méthodes
-
-- `print(const String &message)`: Affiche un message sans saut de ligne.
-- `println(const String &message)`: Affiche un message avec un saut de ligne.
-- `print(DebugLevel level, const String &message)`: Affiche un message de débogage avec un préfixe correspondant au niveau.
-- `println(DebugLevel level, const String &message)`: Affiche un message de débogage avec un préfixe et un saut de ligne.
-- `enableCategory(DebugLevel level)`: Active une catégorie de débogage spécifique.
-- `disableCategory(DebugLevel level)`: Désactive une catégorie de débogage spécifique.
-- `isCategoryEnabled(DebugLevel level)`: Vérifie si une catégorie de débogage est activée.
-- `setDebugLevelName(DebugLevel level, const char* name)`: Définit le nom d'un niveau de débogage.
-- `setDefaultDebugLevels()`: Définit les niveaux de débogage par défaut.
-
-### Exemples
-
-#### Exemple d'initialisation et d'utilisation de base
-
-```cpp
-#include <DebugLogger.h>
-
-DebugLogger logger;
-
-void setup() {
-  Serial.begin(9600); // Définir le baudrate
-  logger.begin(&Serial); // Définir le port série
-  logger.setDefaultDebugLevels();
-
-  logger.setDebugLevelName(DebugLogger::ERROR, "ERREUR");
-  logger.setDebugLevelName(DebugLogger::INFO, "INFORMATION");
-
-  logger.println("Ceci est un message de log.");
-  logger.println(DebugLogger::INFO, "Ceci est un message d'information.");
-  logger.println(DebugLogger::ERROR, "Ceci est un message d'erreur.");
+  // Définir les niveaux de débogage
+  DebugLogger::DebugLevelInfo levels[] = {
+    { "ERROR", true },
+    { "WARNING", true },
+    { "INFO", true },
+    { "DEBUG", false }
+  };
+  
+  // Initialiser le Logger
+  DebugLogger::begin(levels, 4);
+  
+  DebugLogger::println(DebugLogger::INFO, "Système démarré");
 }
 
 void loop() {
-  // Code principal
+  // Afficher des informations selon le niveau
+  DebugLogger::println(DebugLogger::INFO, "Température: 24°C");
+  
+  // Vérifier si un niveau est activé avant d'effectuer des opérations
+  if (DebugLogger::isCategoryEnabled(DebugLogger::DEBUG)) {
+    // Code coûteux de débogage ici
+  }
+  
+  delay(1000);
 }
 ```
 
-#### Exemple de configuration et d'utilisation des niveaux de débogage spécifiques
+## 📚 Documentation
+
+### Classes principales
+
+- **DebugLogger** : Classe statique principale pour la gestion des messages de débogage
+
+### Niveaux de débogage disponibles
+
+```cpp
+enum DebugLevel {
+  NONE,     // Aucun message
+  ERROR,    // Erreurs critiques
+  WARNING,  // Avertissements
+  INFO,     // Informations générales
+  DEBUG,    // Informations détaillées
+  BATTERY,  // Informations liées à la batterie
+  I2C,      // Communication I2C
+  INFLUXDB, // Interactions avec InfluxDB
+  TIME,     // Informations temporelles
+  WIFI,     // Communications WiFi
+  SD,       // Opérations sur carte SD
+  SPIFF,    // Opérations SPIFFS
+  WEB       // Serveur web et communications
+};
+```
+
+### Méthodes principales
+
+| Méthode | Description |
+|---------|-------------|
+| `begin(levels[], size)` | Initialise le logger avec les niveaux spécifiés |
+| `begin(serial, baudrate, levels[], size)` | Initialise avec port série personnalisé |
+| `print(level, message)` | Affiche un message de débogage sans saut de ligne |
+| `println(level, message)` | Affiche un message de débogage avec saut de ligne |
+| `enableCategory(level)` | Active une catégorie de débogage |
+| `disableCategory(level)` | Désactive une catégorie de débogage |
+| `isCategoryEnabled(level)` | Vérifie si une catégorie est activée |
+
+## 📝 Exemples
+
+### Exemple basique
 
 ```cpp
 #include <DebugLogger.h>
 
-DebugLogger logger;
-
 void setup() {
-  Serial.begin(9600); // Définir le baudrate
-  logger.begin(&Serial); // Définir le port série
-  logger.enableCategory(DebugLogger::ERROR);
-  logger.enableCategory(DebugLogger::WARNING);
-  logger.enableCategory(DebugLogger::DEBUG);
-
-  bool isEnabled = logger.isCategoryEnabled(DebugLogger::DEBUG);
-  Serial.print("DEBUG level is ");
-  Serial.println(isEnabled ? "enabled" : "disabled");
-
-  logger.print(DebugLogger::DEBUG, "Ceci est un message de débogage.");
-  logger.println(DebugLogger::DEBUG, "Ceci est un message de débogage avec saut de ligne.");
+  DebugLogger::DebugLevelInfo levels[] = {
+    { "ERROR", true },
+    { "INFO", true }
+  };
+  
+  DebugLogger::begin(levels, 2);
+  DebugLogger::println(DebugLogger::INFO, "Initialisation terminée");
 }
 
 void loop() {
-  // Code principal
+  static int counter = 0;
+  counter++;
+  
+  if (counter % 10 == 0) {
+    DebugLogger::println(DebugLogger::INFO, "Compteur: " + String(counter));
+  }
+  
+  delay(1000);
 }
 ```
 
-#### Exemple d'utilisation des méthodes avec préfixe personnalisé
+Voir plus d'exemples dans le dossier [/examples](/examples)!
 
-```cpp
-#include <DebugLogger.h>
+## 🤝 Contribution
 
-DebugLogger logger;
+Les contributions sont les bienvenues! N'hésitez pas à :
 
-void setup() {
-  Serial.begin(9600); // Définir le baudrate
-  logger.begin(&Serial); // Définir le port série
-  logger.setDefaultDebugLevels();
+1. Fork ce dépôt
+2. Créer une branche (`git checkout -b feature/amazing-feature`)
+3. Commit vos changements (`git commit -m 'Add some amazing feature'`)
+4. Push sur la branche (`git push origin feature/amazing-feature`)
+5. Ouvrir une Pull Request
 
-  logger.print(DebugLogger::INFO, "INFO: Ceci est un message d'information.");
-  logger.println(DebugLogger::INFO, "INFO: Ceci est un message d'information avec saut de ligne.");
-}
+## 📄 Licence
 
-void loop() {
-  // Code principal
-}
-```
-
-## Mots-clés
-
-Arduino, Debug, Logger, Serial, Débogage, Messages, Niveaux de débogage, Préfixe, Informations, Erreurs, Avertissements, Bibliothèque Arduino, Clément Saillant
+Ce projet est sous licence GNU General Public License v3.0 - voir le fichier [LICENSE](LICENSE) pour plus de détails.

@@ -21,8 +21,6 @@
 #define DEBUG_LOGGER_H
 
 #include <Arduino.h>
-#include <map> // map est utilisé pour les niveaux de débogage personnalisés
-#include <vector> // Ajouté pour utiliser std::vector
 
 /**
  * @class DebugLogger
@@ -30,172 +28,120 @@
  */
 class DebugLogger {
 public:
-  /**
-   * @enum DebugLevel
-   * @brief Niveaux de débogage disponibles.
-   */
   enum DebugLevel {
-    NONE,      /**< Aucun débogage */
-    ERROR,     /**< Débogage des erreurs */
-    WARNING,   /**< Débogage des avertissements */
-    INFO,      /**< Débogage des informations */
-    DEBUG,     /**< Débogage général */
-    CUSTOM     /**< Débogage personnalisé */
+    NONE,
+    ERROR,
+    WARNING,
+    INFO,
+    DEBUG,
+    BATTERY,
+    I2C,
+    INFLUXDB,
+    TIME,
+    WIFI,
+    SD,
+    SPIFF,
+    WEB
+  };
+
+  struct DebugLevelInfo {
+    String name;
+    bool enabled;
   };
 
   /**
    * @brief Initialise le DebugLogger avec les niveaux de débogage spécifiés.
-   * @param levels Tableau de booléens représentant les niveaux de débogage activés.
-   * @param numLevels Nombre de niveaux de débogage.
+   * 
+   * Cette méthode configure le logger pour utiliser Serial par défaut avec un baudrate de 115200.
+   * Elle permet de définir les niveaux de débogage qui seront activés dans l'application.
+   * 
+   * @param levels Tableau de structures représentant les niveaux de débogage activés et leurs noms.
+   * @param numLevels Nombre de niveaux de débogage dans le tableau.
    */
-  static void begin(const bool levels[], size_t numLevels);
+  static void begin(const DebugLevelInfo levels[], size_t numLevels);
 
   /**
-   * @brief Initialise le DebugLogger avec le port série, le baudrate et les niveaux de débogage spécifiés.
-   * @param serialPort Port série utilisé pour le débogage.
-   * @param baudrate Baudrate utilisé pour le port série.
-   * @param levels Tableau de booléens représentant les niveaux de débogage activés.
-   * @param numLevels Nombre de niveaux de débogage.
+   * @brief Initialise le DebugLogger avec un port série et baudrate personnalisés.
+   * 
+   * Cette méthode permet de spécifier un port série spécifique pour la sortie de débogage
+   * ainsi qu'un baudrate personnalisé. Les niveaux de débogage sont optionnels.
+   * 
+   * @param serialPort Port série utilisé pour le débogage (HardwareSerial, comme Serial, Serial1, etc.).
+   * @param baudrate Baudrate utilisé pour le port série (par exemple 9600, 115200).
+   * @param levels Tableau de structures représentant les niveaux de débogage activés et leurs noms (optionnel).
+   * @param numLevels Nombre de niveaux de débogage dans le tableau (optionnel).
    */
-  static void begin(HardwareSerial* serialPort, unsigned long baudrate, const bool levels[] = nullptr, size_t numLevels = 0);
+  static void begin(HardwareSerial* serialPort, unsigned long baudrate, const DebugLevelInfo levels[] = nullptr, size_t numLevels = 0);
 
   /**
-   * @brief Initialise le DebugLogger avec le port série, le baudrate et les niveaux de débogage spécifiés.
-   * @param serialPort Port série utilisé pour le débogage.
-   * @param baudrate Baudrate utilisé pour le port série.
-   * @param levels Vecteur de booléens représentant les niveaux de débogage activés.
+   * @brief Définit ou modifie les niveaux de débogage actifs.
+   * 
+   * Cette méthode permet de modifier les niveaux de débogage pendant l'exécution
+   * du programme sans avoir à réinitialiser le logger complet.
+   * 
+   * @param levels Tableau de structures représentant les niveaux de débogage activés et leurs noms.
+   * @param numLevels Nombre de niveaux de débogage dans le tableau.
    */
-  static void begin(HardwareSerial* serialPort, unsigned long baudrate, const std::vector<bool>& levels);
+  static void setDebugLevel(const DebugLevelInfo levels[], size_t numLevels);
 
   /**
-   * @brief Initialise le DebugLogger avec le port série, le baudrate et les niveaux de débogage spécifiés.
-   * @param serialPort Port série utilisé pour le débogage.
-   * @param baudrate Baudrate utilisé pour le port série.
-   * @param levels Tableau dynamique de booléens représentant les niveaux de débogage activés.
-   * @param numLevels Nombre de niveaux de débogage.
-   */
-  static void begin(HardwareSerial* serialPort, unsigned long baudrate, const bool* levels, size_t numLevels);
-
-  /**
-   * @brief Définit les niveaux de débogage.
-   * @param levels Tableau de booléens représentant les niveaux de débogage activés.
-   * @param numLevels Nombre de niveaux de débogage.
-   */
-  static void setDebugLevel(const bool levels[], size_t numLevels);
-
-  /**
-   * @brief Définit les niveaux de débogage.
-   * @param levels Vecteur de booléens représentant les niveaux de débogage activés.
-   */
-  static void setDebugLevel(const std::vector<bool>& levels);
-
-  /**
-   * @brief Définit les niveaux de débogage.
-   * @param levels Tableau dynamique de booléens représentant les niveaux de débogage activés.
-   * @param numLevels Nombre de niveaux de débogage.
-   */
-  static void setDebugLevel(const bool* levels, size_t numLevels);
-
-  /**
-   * @brief Définit les niveaux de débogage.
-   * @param levels Tableau de niveaux de débogage représentant les niveaux de débogage activés.
-   * @param numLevels Nombre de niveaux de débogage.
-   */
-  static void setDebugLevel(const DebugLevel levels[], size_t numLevels);
-
-  /**
-   * @brief Ajoute un nouveau niveau de débogage.
-   * @param level Nom du nouveau niveau de débogage.
-   */
-  static void addDebugLevel(const String& level);
-
-  /**
-   * @brief Vérifie si une catégorie de débogage est activée.
-   * @param level Niveau de débogage à vérifier.
-   * @return true si la catégorie est activée, false sinon.
+   * @brief Vérifie si une catégorie de débogage spécifique est activée.
+   * 
+   * Utilisez cette méthode pour vérifier si un niveau de débogage est actif avant
+   * d'exécuter du code conditionnel lié au débogage.
+   * 
+   * @param level Niveau de débogage à vérifier (depuis l'enum DebugLevel).
+   * @return true si la catégorie est activée et que les logs de ce niveau seront affichés, false sinon.
    */
   static bool isCategoryEnabled(DebugLevel level);
 
   /**
-   * @brief Affiche un message sans saut de ligne.
-   * @param message Message à afficher.
-   */
-  static void print(const String &message);
-
-  /**
-   * @brief Affiche un message avec un saut de ligne.
-   * @param message Message à afficher.
-   */
-  static void println(const String &message);
-
-  /**
    * @brief Affiche un message de débogage avec un préfixe correspondant au niveau.
-   * @param level Niveau de débogage.
+   * 
+   * Cette méthode affiche un message sur le port série configuré si la catégorie
+   * de débogage spécifiée est activée. Le message n'inclut pas de retour à la ligne.
+   * 
+   * @param level Niveau de débogage pour le message (depuis l'enum DebugLevel).
    * @param message Message à afficher.
    */
-  static void print(DebugLevel level, const String &message);
+  static void print(DebugLevel level, const String& message);
 
   /**
    * @brief Affiche un message de débogage avec un préfixe et un saut de ligne.
-   * @param level Niveau de débogage.
+   * 
+   * Cette méthode affiche un message sur le port série configuré si la catégorie
+   * de débogage spécifiée est activée, suivi d'un retour à la ligne.
+   * 
+   * @param level Niveau de débogage pour le message (depuis l'enum DebugLevel).
    * @param message Message à afficher.
    */
-  static void println(DebugLevel level, const String &message);
+  static void println(DebugLevel level, const String& message);
 
   /**
    * @brief Active une catégorie de débogage spécifique.
-   * @param level Niveau de débogage.
+   * 
+   * Utilisez cette méthode pour activer dynamiquement un niveau de débogage
+   * pendant l'exécution du programme.
+   * 
+   * @param level Niveau de débogage à activer (depuis l'enum DebugLevel).
    */
   static void enableCategory(DebugLevel level);
 
   /**
    * @brief Désactive une catégorie de débogage spécifique.
-   * @param level Niveau de débogage.
+   * 
+   * Utilisez cette méthode pour désactiver dynamiquement un niveau de débogage
+   * pendant l'exécution du programme.
+   * 
+   * @param level Niveau de débogage à désactiver (depuis l'enum DebugLevel).
    */
   static void disableCategory(DebugLevel level);
 
-  /**
-   * @brief Active ou désactive un niveau de débogage spécifique.
-   * @param level Niveau de débogage.
-   * @param enabled true pour activer, false pour désactiver.
-   */
-  static void setDebugLevel(DebugLevel level, bool enabled);
-
-  /**
-   * @brief Définit le nom d'un niveau de débogage.
-   * @param level Niveau de débogage.
-   * @param name Nom du niveau de débogage.
-   */
-  static void setDebugLevelName(DebugLevel level, const String& name);
-
-  /**
-   * @brief Définit les niveaux de débogage par défaut.
-   */
-  static void setDefaultDebugLevels();
-
 private:
-  static bool* debugLevels; /**< Tableau dynamique des niveaux de débogage activés */
-  static String* debugLevelNames; /**< Tableau dynamique des noms des niveaux de débogage */
+  static DebugLevelInfo* debugLevels; /**< Tableau dynamique des niveaux de débogage activés */
   static size_t numLevels; /**< Nombre de niveaux de débogage */
-  static std::map<String, DebugLevel> customDebugLevels; /**< Map des niveaux de débogage personnalisés */
   static HardwareSerial* serialPort; /**< Port série utilisé pour le débogage */
   static unsigned long baudrate; /**< Baudrate utilisé pour le port série */
-
-  /**
-   * @brief Affiche un message avec un préfixe sans saut de ligne.
-   * @param level Niveau de débogage.
-   * @param prefix Préfixe à afficher.
-   * @param message Message à afficher.
-   */
-  static void printWithPrefix(DebugLevel level, const String &prefix, const String &message);
-
-  /**
-   * @brief Affiche un message avec un préfixe et un saut de ligne.
-   * @param level Niveau de débogage.
-   * @param prefix Préfixe à afficher.
-   * @param message Message à afficher.
-   */
-  static void printlnWithPrefix(DebugLevel level, const String &prefix, const String &message);
 };
 
 #endif // DEBUG_LOGGER_H
